@@ -84,15 +84,35 @@ async def get_youtube_transcript(url: str, ctx: Context):
     Returns:
         str: The timestamped transcript of the youtube video
     """
+    media_path = None
     try:
+        logger.info(f"Downloading YouTube video from: {url}")
         media_path = get_youtube(url, temp_file_path)
+
+        logger.info(f"Transcribing video: {get_name(media_path)}")
         transcript = transciption_pipeline(media_path)
+
+        logger.info("Transcription completed successfully")
         return transcript
+    except ValueError as e:
+        error_msg = f"Invalid YouTube URL or video unavailable: {str(e)}"
+        logger.error(error_msg)
+        await ctx.error(error_msg)
+        raise
     except Exception as e:
-        await ctx.error(f"Encountered the following error: {str(e)}")
-        raise  # This part is correct - raising after logging
+        error_msg = f"Failed to transcribe video: {str(e)}"
+        logger.error(error_msg, exc_info=True)
+        await ctx.error(error_msg)
+        raise
     finally:
-        shutil.rmtree(media_path)
+        if media_path and os.path.exists(media_path):
+            try:
+                shutil.rmtree(media_path)
+                logger.debug(f"Cleaned up temporary file: {media_path}")
+            except Exception as e:
+                logger.warning(
+                    f"Failed to clean up temporary file {media_path}: {str(e)}"
+                )
 
 
 @mcp.tool()
@@ -106,14 +126,33 @@ async def get_bilibili_transcript(url: str, ctx: Context):
         str: The timestamped transcript of the youtube video
     """
     try:
+        logger.info(f"Downloading Bilibili video from: {url}")
         media_path = get_bilibili(url, temp_file_path)
+
+        logger.info(f"Transcribing video: {get_name(media_path)}")
         transcript = transciption_pipeline(media_path)
+
+        logger.info("Transcription completed successfully")
         return transcript
+    except ValueError as e:
+        error_msg = f"Invalid YouTube URL or video unavailable: {str(e)}"
+        logger.error(error_msg)
+        await ctx.error(error_msg)
+        raise
     except Exception as e:
-        await ctx.error(f"Encountered the following error: {str(e)}")
-        raise  # This part is correct - raising after logging
+        error_msg = f"Failed to transcribe video: {str(e)}"
+        logger.error(error_msg, exc_info=True)
+        await ctx.error(error_msg)
+        raise
     finally:
-        shutil.rmtree(media_path)
+        if media_path and os.path.exists(media_path):
+            try:
+                shutil.rmtree(media_path)
+                logger.debug(f"Cleaned up temporary file: {media_path}")
+            except Exception as e:
+                logger.warning(
+                    f"Failed to clean up temporary file {media_path}: {str(e)}"
+                )
 
 
 if __name__ == "__main__":
