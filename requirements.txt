@@ -1,0 +1,20 @@
+# Loading environmental variables
+python-dotenv
+
+# Obtain Media
+pytubefix
+bilix
+
+# Transcription
+httpx # Needed for dealing with time out issues
+replicate # Online transcription
+
+# Local transcription
+# whisperx
+
+# File hosting
+# Common
+requests
+
+# FastMCP
+fastmcp
